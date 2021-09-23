@@ -1,51 +1,51 @@
 
-# image: python:latest
+image: python:latest
 
-# services:
-#     - docker:dind
-# #   - mysql:latest
-# #   - postgres:latest
+services:
+    - docker:dind
+#   - mysql:latest
+#   - postgres:latest
 
-# # variables:
-# #   POSTGRES_DB: database_name
+# variables:
+#   POSTGRES_DB: database_name
 
-# # This folder is cached between builds
-# # https://docs.gitlab.com/ee/ci/yaml/index.html#cache
-# # cache:
-# #   paths:
-# #     - ~/.cache/pip/
+# This folder is cached between builds
+# https://docs.gitlab.com/ee/ci/yaml/index.html#cache
+# cache:
+#   paths:
+#     - ~/.cache/pip/
 
-# before_script:
-#   - python -V  
+before_script:
+  - python -V  
 
-#   - pip install docker-compose
+  - pip install docker-compose
 
-# # To get Django tests to work you may need to create a settings file using
-# # the following DATABASES:
-# #
-# # DATABASES = {
-# #     'default': {
-# #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-# #        'NAME': 'ci',
-# #        'USER': 'postgres',
-# #        'PASSWORD': 'postgres',
-# #        'HOST': 'postgres',
-# #        'PORT': '5432',
-# #    },
-# # }
-# #
-# # and then adding `--settings app.settings.ci` (or similar) to the test command
-
-# test:
-#   # variables:
-#   #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
-#   script:
-#     - docker-compose run app sh -c 'python manage.py test'
-
-stages:
-    - test
+# To get Django tests to work you may need to create a settings file using
+# the following DATABASES:
+#
+# DATABASES = {
+#     'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#        'NAME': 'ci',
+#        'USER': 'postgres',
+#        'PASSWORD': 'postgres',
+#        'HOST': 'postgres',
+#        'PORT': '5432',
+#    },
+# }
+#
+# and then adding `--settings app.settings.ci` (or similar) to the test command
 
 test:
-    stage: test
-    script:
-        - echo "Successsass!"
+  # variables:
+  #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  script:
+    - docker-compose run app sh -c 'python manage.py test'
+
+# stages:
+#     - test
+
+# test:
+#     stage: test
+#     script:
+#         - echo "Successsass!"
