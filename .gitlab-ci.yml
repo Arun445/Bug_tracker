@@ -3,7 +3,7 @@ image:
     - python:latest
     - docker:latest
 
-    services:
+services:
     - docker:dind
 
 before_script:
