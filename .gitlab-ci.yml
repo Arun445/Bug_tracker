@@ -18,3 +18,4 @@ test:
     - ls
     - python manage.py test
     - docker-compose ps
+    - echo aa
