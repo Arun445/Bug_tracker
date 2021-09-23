@@ -1,5 +1,4 @@
 
-# image: python:latest
 image: docker:latest
 
 
@@ -8,14 +7,11 @@ services:
 
 before_script:
   - apk add py-pip python3-dev
-  - docker build .
-  - pip install -r requirements.txt
+
   - pip install docker-compose
 
 test:
   script:
-    - cd app
-    - ls
-    - python manage.py test
+
     - docker-compose ps
     - echo aa
