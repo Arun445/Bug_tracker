@@ -1,17 +1,11 @@
 
-image: docker:latest
-
-
-services:
-    - docker:dind
+image: python:latest
 
 before_script:
-  - apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
-
-  - pip3 install docker-compose
-
+  - pip install -r requirements.txt
+  
 test:
   script:
-
-    - docker-compose ps
-    - echo aa
+    - cd app
+    - ls
+    - python manage.py test & flake8
