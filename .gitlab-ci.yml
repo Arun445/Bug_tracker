@@ -40,6 +40,8 @@ test:
   # variables:
   #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
+    - ls
+    - echo 'Successsass!'
     - docker-compose run app sh -c 'echo Successsass!'
 
 # stages:
