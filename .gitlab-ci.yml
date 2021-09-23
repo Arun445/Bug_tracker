@@ -1,6 +1,9 @@
 
-image: python:latest
-services:
+image: 
+    - python:latest
+    - docker:latest
+
+    services:
     - docker:dind
 
 before_script:
