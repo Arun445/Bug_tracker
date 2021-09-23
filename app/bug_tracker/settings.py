@@ -20,6 +20,10 @@ except:
 
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
+    'user.apps.UserConfig',
+
+    'rest_framework',
+    'rest_framework.authtoken',
 
     'django.contrib.admin',
     'django.contrib.auth',
