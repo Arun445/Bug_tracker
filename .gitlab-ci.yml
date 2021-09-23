@@ -1,8 +1,8 @@
 
-image: python:latest
+image: python:3.9-alpine
 
-services:
-    - docker:dind
+# services:
+#     - docker:dind
 #   - mysql:latest
 #   - postgres:latest
 
@@ -40,7 +40,7 @@ test:
   # variables:
   #   DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
-    - ls
+    - systemctl status docker
     - echo 'Successsass!'
     - docker-compose run app sh -c 'echo Successsass!'
 
