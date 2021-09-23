@@ -11,5 +11,6 @@ test:
   script:
     - cd app
     - ls
-    - echo 'Successsass!'
-    - docker-compose run app sh -c 'echo Succeswasssass!'
+    - echo 'Successsaasdasdss!'
+    - echo 'Successsaasdasdss!'
+    - python manage.py test
