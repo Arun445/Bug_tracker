@@ -1,5 +1,7 @@
 
 image: python:latest
+services:
+    - docker:dind
 
 before_script:
   - pip install -r requirements.txt
