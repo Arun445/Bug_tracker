@@ -9,6 +9,7 @@ before_script:
 
 test:
   script:
-    - systemctl status docker
+    - cd app
+    - ls
     - echo 'Successsass!'
-    - docker-compose run app sh -c 'echo Successsass!'
+    - docker-compose run app sh -c 'echo Succeswasssass!'
