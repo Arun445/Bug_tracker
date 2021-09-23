@@ -4,13 +4,12 @@ image: python:latest
 before_script:
   - python -V  
 
-  - pip install docker-compose
+  - pip install Django
 
 
 test:
   script:
     - cd app
     - ls
-    - echo 'Successsaasdasdss!'
-    - echo 'Successsaasdasdss!'
+    
     - python manage.py test
