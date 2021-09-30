@@ -1,7 +1,7 @@
 from django.db import models
-
+from django.conf import settings
 from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin)
+    BaseUserManager, AbstractUser)
 
 
 class UserManager(BaseUserManager):
@@ -26,15 +26,34 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
-    # Custom user models that supports user email instead of username
+class User(AbstractUser):
+    username = None
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_submiter = models.BooleanField(default=False)
+    is_project_manager = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    def __str__(self):
+        return self.email
+
+
+class Project(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(max_length=100)
+    description = models.TextField(max_length=200, blank=True)
+    is_complete = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name

@@ -1,8 +1,15 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from faker import Faker
+
+from core import models
+
 User = get_user_model()
 fake = Faker()
+
+
+def example_user(email=fake.email(), password=fake.password()):
+    return User.objects.create_user(email, password)
 
 
 class ModelTest(TestCase):
@@ -41,3 +48,12 @@ class ModelTest(TestCase):
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_project_create(self):
+        # Test the Projects string representation
+        project = models.Project.objects.create(
+            user=example_user(),
+            name=fake.name(),
+            description=fake.text()
+        )
+        self.assertEqual(str(project), project.name)

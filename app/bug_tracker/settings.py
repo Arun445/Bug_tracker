@@ -21,6 +21,7 @@ except:
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
+    'api.apps.ApiConfig',
 
     'rest_framework',
     'rest_framework.authtoken',
