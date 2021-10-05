@@ -12,6 +12,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Users must have email address')
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
+        user.is_staff = True
         user.save(using=self._db)
 
         return user
@@ -34,7 +35,7 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    is_submiter = models.BooleanField(default=False)
+    is_submitter = models.BooleanField(default=False)
     is_project_manager = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
@@ -49,7 +50,8 @@ class User(AbstractUser):
 class Project(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=200, blank=True)
