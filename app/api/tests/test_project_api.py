@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from faker import Faker
 from rest_framework import status
-from core.models import Project
+from core.models import Project, UsersAssignedToProject
 from api.serializers import ProjectSerializer
 
 fake = Faker()
@@ -12,32 +12,15 @@ User = get_user_model()
 PROJECT_URL = reverse('api:project-list')
 
 
-def transaction_detail_url(transaction_id):
-    # Return transaction detail url
-    return reverse('api:transaction-detail', args=[transaction_id])
+def fake_user(wow=None):
+    '''Creates a fake user'''
+    return User.objects.create_user(
+        email=fake.email(), password=fake.password(), name=fake.name())
 
 
-# class PublicProjectApiTests(TestCase):
-#     '''Test Project view without login'''
-
-#     def setUp(self):
-#         self.client = APIClient()
-
-#     def test_get_all_projects_unsuccessful(self):
-#         response = self.client.get(PROJECT_URL)
-#         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # def test_get_project_data_unsuccessful(self):
-    #     response = self.client.get(PROJECT_URL)
-    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    # def test_create_project_unsuccessful(self):
-    #     payload = {
-    #         'name': fake.name(),
-    #         'description': fake.text()
-    #     }
-    #     response = self.client.post(CREATE_PROJECT_URL, payload)
-    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+def users_assignment_url(project_id):
+    # Return URL for transaction image upload
+    return reverse('api:project-assign-users', args=[project_id])
 
 
 class NotAdminProjectApiTests(TestCase):
@@ -96,3 +79,17 @@ class AdminProjectApiTests(TestCase):
             name=payload['name']
         ).exists()
         self.assertTrue(project_exists)
+
+    def test_assign_users_to_project(self):
+        '''Test to check if project manager can assign users to projects'''
+        user = fake_user()
+        user1 = fake_user()
+        project = Project.objects.create(user=self.user, name=fake.name())
+        url = users_assignment_url(project)
+
+        payload = {'project_id': project.id, 'users': [user.id, user1.id]}
+        response = self.client.post(url, payload)
+        users = UsersAssignedToProject.objects.filter(project=project)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(user, users[0].user)
+        self.assertEqual(user1, users[1].user)

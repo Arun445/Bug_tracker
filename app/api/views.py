@@ -1,6 +1,10 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
-# from rest_framework.decorators import permission_classes
+from rest_framework.response import Response
+from rest_framework.decorators import action
+
+from django.contrib.auth import get_user_model
+
 from api.permissions import IsAdminOrReadOnly
 from api.serializers import ProjectSerializer
 from core import models
@@ -21,6 +25,19 @@ class ProjectViewSet(viewsets.GenericViewSet,
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['POST'])
+    def assign_users(self, request, pk=None):
+        project = models.Project.objects.get(id=request.POST.get('project_id'))
+        for user in request.POST.getlist('users'):
+            user = get_user_model().objects.get(id=user)
+            models.UsersAssignedToProject.objects.create(
+                user=user, project=project
+            )
+        serializer = ProjectSerializer(
+            project, many=False)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     # def perform_update(self, serializer):
     #     instance = serializer.save()
