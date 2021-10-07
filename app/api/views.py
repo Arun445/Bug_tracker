@@ -5,8 +5,8 @@ from rest_framework.decorators import action
 
 from django.contrib.auth import get_user_model
 
-from api.permissions import IsAdminOrReadOnly
-from api.serializers import ProjectSerializer
+from api.permissions import IsAdminOrReadOnly, IsSubmitter
+from api.serializers import ProjectSerializer, TicketSerializer
 from core import models
 
 
@@ -42,3 +42,10 @@ class ProjectViewSet(viewsets.GenericViewSet,
     # def perform_update(self, serializer):
     #     instance = serializer.save()
     #     (user=self.request.user, modified=instance)
+
+
+class TicketViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    serializer_class = TicketSerializer
+    queryset = models.Ticket.objects.all()
+    permission_classes = (IsSubmitterOrReadOnly,)
+    authentication_classes = (TokenAuthentication,)

@@ -24,3 +24,10 @@ class AssignToProjectSerializer(serializers.ModelSerializer):
         model = models.UsersAssignedToProject
         fields = '__all__'
         read_only_fields = (id,)
+
+
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Ticket
+        fields = '__all__'
+        read_only_fields = (id,)

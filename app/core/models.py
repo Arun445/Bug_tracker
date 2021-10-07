@@ -70,3 +70,18 @@ class UsersAssignedToProject(models.Model):
         Project,
         on_delete=models.CASCADE,
     )
+
+
+class Ticket(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    description = models.TextField(max_length=200, blank=True)
+    priority = models.CharField(max_length=20)
+    status = models.CharField(max_length=20)
+    ticket_type = models.CharField(max_length=20)
+    assigned_user = models.OneToOneField('UsersAssignedToTicket', blank=True)
+    date_created = models.DateTimeField(auto_now_add=True)
