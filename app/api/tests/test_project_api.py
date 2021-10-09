@@ -85,9 +85,9 @@ class AdminProjectApiTests(TestCase):
         user = fake_user()
         user1 = fake_user()
         project = Project.objects.create(user=self.user, name=fake.name())
-        url = users_assignment_url(project)
+        url = users_assignment_url(project.id)
 
-        payload = {'project_id': project.id, 'users': [user.id, user1.id]}
+        payload = {'users': [user.id, user1.id]}
         response = self.client.post(url, payload)
         users = UsersAssignedToProject.objects.filter(project=project)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

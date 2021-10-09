@@ -12,22 +12,34 @@ class IsAdminOrReadOnly(BasePermission):
 
         if (request.method in SAFE_METHODS
             and request.user
-            and request.user.is_authenticated
-            or request.user
-            and request.user.is_staff
-            and request.user.is_project_manager
-                or request.user.is_superuser):
+                and request.user.is_authenticated):
+            return True
+        elif (request.user
+              and request.user.is_staff
+              and request.user.is_project_manager
+              or request.user.is_superuser):
             return True
         return False
 
 
-class IsSubmitter(BasePermission):
+class IsSubmitterOrReadOnly(BasePermission):
     """
     Allows access only to submitter users.
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_submiter)
+
+        if (request.method in SAFE_METHODS
+            and request.user
+                and request.user.is_authenticated):
+            return True
+        elif (request.user
+              and request.user.is_staff
+              and request.user.is_submitter
+              or request.user.is_superuser):
+
+            return True
+        return False
 
 
 class IsProjectManager(BasePermission):
@@ -43,12 +55,11 @@ class IsProjectManager(BasePermission):
         )
 
 
-class IsAdmiasUser(BasePermission):
+class IsAdminUser(BasePermission):
     """
     Allows access only to admin users.
     """
 
     def has_permission(self, request, view):
-        print(request.user)
-        print(request.user.is_submitter)
+
         return bool(request.user and request.user.is_staff)

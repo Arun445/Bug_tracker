@@ -22,7 +22,7 @@ class AssignToProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.UsersAssignedToProject
-        fields = '__all__'
+        fields = ['user', 'id']
         read_only_fields = (id,)
 
 

@@ -73,15 +73,33 @@ class UsersAssignedToProject(models.Model):
 
 
 class Ticket(models.Model):
+    PRIORITY_CHOICES = (
+        ('NONE', 'None'),
+        ('LOW', 'Low'),
+        ('MEDIUM', 'Medium'),
+        ('HIGH', 'High'),
+    )
+    STATUS_CHOICES = (
+        ('OPEN', 'Open'),
+        ('IN PROGRESS', 'In Progress'),
+        ('RESOLVED', 'Resolved'),
+    )
+    TYPE_CHOICES = (
+        ('BUGS/ERRORS', 'Bugs/Errors'),
+
+    )
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=200, blank=True)
-    priority = models.CharField(max_length=20)
-    status = models.CharField(max_length=20)
-    ticket_type = models.CharField(max_length=20)
-    assigned_user = models.OneToOneField('UsersAssignedToTicket', blank=True)
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    ticket_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    # assigned_user = models.OneToOneField(
+    #     'UsersAssignedToTicket', on_delete=models.CASCADE, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
