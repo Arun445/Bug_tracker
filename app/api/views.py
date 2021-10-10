@@ -1,12 +1,14 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from django.contrib.auth import get_user_model
 
 from api.custom_permissions import IsAdminOrReadOnly, IsSubmitterOrReadOnly
-from api.serializers import ProjectSerializer, TicketSerializer, OneTwo
+from api.serializers import (
+    ProjectSerializer, TicketSerializer, OneTwo, CommentSerializer)
 from core import models
 
 
@@ -81,3 +83,14 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class CommentViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+
+    serializer_class = CommentSerializer
+    queryset = models.Comment.objects.all()
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_queryset(self):
+        return self.queryset

@@ -35,3 +35,10 @@ class TicketSerializer(serializers.ModelSerializer):
         model = models.Ticket
         fields = '__all__'
         read_only_fields = (id,)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Comment
+        fields = '__all__'
+        read_only_fields = (id,)

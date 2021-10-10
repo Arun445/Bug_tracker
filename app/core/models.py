@@ -115,3 +115,14 @@ class Ticket(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE)
+    message = models.TextField(max_length=200)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message

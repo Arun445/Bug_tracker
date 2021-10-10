@@ -7,7 +7,7 @@ router = DefaultRouter()
 
 router.register('projects', views.ProjectViewSet)
 router.register('tickets', views.TicketViewSet)
-
+router.register('comments', views.CommentViewSet)
 
 app_name = 'api'
 
