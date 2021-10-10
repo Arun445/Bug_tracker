@@ -26,6 +26,10 @@ class AssignToProjectSerializer(serializers.ModelSerializer):
         read_only_fields = (id,)
 
 
+class OneTwo(serializers.Serializer):
+    users = AssignToProjectSerializer(many=True)
+
+
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Ticket

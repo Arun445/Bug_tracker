@@ -71,6 +71,12 @@ class UsersAssignedToProject(models.Model):
         on_delete=models.CASCADE,
     )
 
+    def __str__(self):
+        return f'{str(self.user)}, {str(self.project)}'
+
+    class Meta:
+        unique_together = [['user', 'project']]
+
 
 class Ticket(models.Model):
     PRIORITY_CHOICES = (
@@ -92,7 +98,8 @@ class Ticket(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        null=True
+        null=True,
+        related_name='user'
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
@@ -100,6 +107,11 @@ class Ticket(models.Model):
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     ticket_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    # assigned_user = models.OneToOneField(
-    #     'UsersAssignedToTicket', on_delete=models.CASCADE, blank=True)
+    assigned_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='assigned_user',
+        on_delete=models.CASCADE, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.title)

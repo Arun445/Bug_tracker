@@ -93,3 +93,15 @@ class AdminProjectApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(user, users[0].user)
         self.assertEqual(user1, users[1].user)
+
+    def test_assign_the_same_user_to_project_twice(self):
+        '''Test to check if a user can
+        be assigned to the same procejt twice'''
+        user = fake_user()
+        project = Project.objects.create(user=self.user, name=fake.name())
+        url = users_assignment_url(project.id)
+
+        payload = {'users': [user.id]}
+        self.client.post(url, payload)
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
