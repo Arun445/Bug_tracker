@@ -8,7 +8,8 @@ from django.contrib.auth import get_user_model
 
 from api.custom_permissions import IsAdminOrReadOnly, IsSubmitterOrReadOnly
 from api.serializers import (
-    ProjectSerializer, TicketSerializer, OneTwo, CommentSerializer)
+    ProjectSerializer, TicketSerializer,
+    AssignManyToProjectSerializer, CommentSerializer)
 from core import models
 
 
@@ -29,7 +30,7 @@ class ProjectViewSet(viewsets.ModelViewSet
         # if self.action == 'retrieve':
         #     return
         if self.action == 'assign_users':
-            return OneTwo
+            return AssignManyToProjectSerializer
         return self.serializer_class
 
     def perform_create(self, serializer):
@@ -85,7 +86,10 @@ class TicketViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class CommentViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+class CommentViewSet(viewsets.GenericViewSet,
+                     mixins.RetrieveModelMixin,
+                     mixins.CreateModelMixin,
+                     mixins.DestroyModelMixin):
 
     serializer_class = CommentSerializer
     queryset = models.Comment.objects.all()
@@ -94,3 +98,16 @@ class CommentViewSet(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
     def get_queryset(self):
         return self.queryset
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user == self.request.user:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(
+                {'detail': 'User is not the creator of this comment'},
+                status=status.HTTP_401_UNAUTHORIZED)

@@ -119,7 +119,8 @@ class Ticket(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+                             on_delete=models.CASCADE,
+                             null=True)
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE)
     message = models.TextField(max_length=200)
     date_created = models.DateTimeField(auto_now_add=True)

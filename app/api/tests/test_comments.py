@@ -10,7 +10,7 @@ from core import models
 
 fake = Faker()
 User = get_user_model()
-# COMMENT_URL = reverse('api:comment-list')
+COMMENT_URL = reverse('api:comment-list')
 
 
 def comment_detail_url(comment_id):
@@ -57,6 +57,7 @@ class AuthenticatedUserTests(TestCase):
     #     response = self.client.get(COMMENT_URL)
 
     def test_retrieve_comment(self):
+        '''Test if a user can retrieve a comment'''
         comment = create_comment(user=self.user, ticket=self.ticket)
         url = comment_detail_url(comment.id)
         response = self.client.get(url)
@@ -66,3 +67,33 @@ class AuthenticatedUserTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(comment_exists)
+
+    def test_create_comment(self):
+        '''Test if an authenticated user can create a comment'''
+        payload = {'ticket': self.ticket.id, 'message': fake.word()}
+        response = self.client.post(COMMENT_URL, payload)
+        comment_exists = models.Comment.objects.filter(user=self.user).exists()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(comment_exists)
+
+    def test_deleting_comment_by_author(self):
+        '''Tests comment deletion by the user who posted the comment'''
+        comment = create_comment(user=self.user, ticket=self.ticket)
+        url = comment_detail_url(comment.id)
+        response = self.client.delete(url)
+        comments = models.Comment.objects.all()
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(comments), 0)
+
+    def test_deleting_comment_not_by_author(self):
+        '''Tests comment deletion by another user'''
+        user1 = User.objects.create_user(
+            email=fake.email(), password=fake.password())
+        comment = create_comment(user=user1, ticket=self.ticket)
+        url = comment_detail_url(comment.id)
+        response = self.client.delete(url)
+        comments = models.Comment.objects.all()
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(len(comments), 1)

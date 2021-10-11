@@ -26,15 +26,26 @@ class AssignToProjectSerializer(serializers.ModelSerializer):
         read_only_fields = (id,)
 
 
-class OneTwo(serializers.Serializer):
+class AssignManyToProjectSerializer(serializers.Serializer):
     users = AssignToProjectSerializer(many=True)
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    ticket_comments = serializers.SerializerMethodField()
+
     class Meta:
         model = models.Ticket
-        fields = '__all__'
+        fields = ['id', 'user', 'project', 'title', 'description', 'priority',
+                  'status', 'ticket_type', 'assigned_user', 'date_created',
+                  'ticket_comments']
         read_only_fields = (id,)
+
+    def get_ticket_comments(self, obj):
+        ticket_comments = obj.comment_set.filter(
+            ticket=obj.id
+        )
+        serializer = CommentSerializer(ticket_comments, many=True)
+        return serializer.data
 
 
 class CommentSerializer(serializers.ModelSerializer):

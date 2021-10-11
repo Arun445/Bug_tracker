@@ -13,6 +13,11 @@ fake = Faker()
 TICKET_URL = reverse('api:ticket-list')
 
 
+def create_comment(user, ticket):
+    return models.Comment.objects.create(
+        user=user, ticket=ticket, message=fake.word())
+
+
 def ticket_detail_url(ticket_id):
     # Return ticket detail url
     return reverse('api:ticket-detail', args=[ticket_id])
@@ -81,6 +86,23 @@ class DeveloperUserTicketApiTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
+
+    def test_list_all_ticket_comments(self):
+        '''Test listing all the comments on a specific ticket'''
+        ticket1 = create_test_ticket(user=self.user, project=self.project)
+        ticket2 = create_test_ticket(user=self.user, project=self.project)
+        comment = create_comment(user=self.user, ticket=ticket1)
+        create_comment(user=self.user, ticket=ticket1)
+        create_comment(user=self.user, ticket=ticket2)
+
+        url = ticket_detail_url(ticket1.id)
+        response = self.client.get(url)
+
+        ticket1_comments = models.Comment.objects.filter(ticket=ticket1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['ticket_comments'][0]['message'], comment.message)
+        self.assertEqual(len(ticket1_comments), 2)
 
     def test_create_ticket_unsuccessful(self):
         '''Test that not submitter and not admin cant create tickets'''
