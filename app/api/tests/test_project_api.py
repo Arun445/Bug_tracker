@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from faker import Faker
 from rest_framework import status
-from core.models import Project, UsersAssignedToProject
+from core.models import Project, UsersAssignedToProject, Ticket
 from api.serializers import ProjectSerializer
 
 fake = Faker()
@@ -18,9 +18,27 @@ def fake_user(wow=None):
         email=fake.email(), password=fake.password(), name=fake.name())
 
 
+def project_detail_url(project_id):
+    return reverse('api:project-detail', args=[project_id])
+
+
 def users_assignment_url(project_id):
     # Return URL for transaction image upload
     return reverse('api:project-assign-users', args=[project_id])
+
+
+def create_test_ticket(user, project, assigned_user=None):
+    '''Creates a test ticket'''
+    ticket = Ticket.objects.create(
+        user=user,
+        project=project,
+        title=fake.word(),
+        priority='Medium',
+        status='Open',
+        ticket_type='Debug',
+        assigned_user=assigned_user
+    )
+    return ticket
 
 
 class NotAdminProjectApiTests(TestCase):
@@ -45,12 +63,50 @@ class NotAdminProjectApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
+    def test_get_all_projects_with_assigned_users(self):
+        '''Test listing all project assinged users'''
+        project = Project.objects.create(user=self.user, name=fake.name())
+        user1 = fake_user()
+        assigned_user = project.usersassignedtoproject_set.create(
+            user=self.user)
+        project.usersassignedtoproject_set.create(user=user1)
+        url = project_detail_url(project.id)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['assigned_users'][0]['user'], assigned_user.user.id)
+        self.assertEqual(
+            len((response.data)['assigned_users']), 2)
+
+    def test_list_all_project_tickets(self):
+        '''Test listing all project tickets'''
+        project = Project.objects.create(user=self.user, name=fake.name())
+        project1 = Project.objects.create(user=self.user, name=fake.name())
+
+        ticket1 = create_test_ticket(user=self.user, project=project)
+        create_test_ticket(user=self.user, project=project1)
+        url = project_detail_url(project.id)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            (response.data)['project_tickets'][0]['title'], ticket1.title)
+        self.assertEqual(
+            len((response.data)['project_tickets']), 1)
+
     def test_create_project_not_authorized(self):
         '''Test to create a project when the user is not a project manager'''
         payload = {
             'name': fake.name()
         }
         response = self.client.post(PROJECT_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_project_not_authorized(self):
+        '''Test that an unauthorized user cant delete a project'''
+        project = Project.objects.create(user=self.user, name=fake.name())
+
+        url = project_detail_url(project.id)
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -96,7 +152,7 @@ class AdminProjectApiTests(TestCase):
 
     def test_assign_the_same_user_to_project_twice(self):
         '''Test to check if a user can
-        be assigned to the same procejt twice'''
+        be assigned to the same procject twice'''
         user = fake_user()
         project = Project.objects.create(user=self.user, name=fake.name())
         url = users_assignment_url(project.id)

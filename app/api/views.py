@@ -3,13 +3,13 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
-
 from django.contrib.auth import get_user_model
-
-from api.custom_permissions import IsAdminOrReadOnly, IsSubmitterOrReadOnly
+from api.custom_permissions import (
+    IsProjectManagerOrReadOnly, IsSubmitterOrReadOnly)
 from api.serializers import (
-    ProjectSerializer, TicketSerializer,
-    AssignManyToProjectSerializer, CommentSerializer)
+    ProjectSerializer, ProjectDetailSerializer, TicketSerializer,
+    TicketDetailSerializer, AssignManyToProjectSerializer,
+    CommentSerializer)
 from core import models
 
 
@@ -17,18 +17,18 @@ class ProjectViewSet(viewsets.ModelViewSet
                      ):
     '''Manage projects in the database'''
     serializer_class = ProjectSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsProjectManagerOrReadOnly,)
     authentication_classes = (TokenAuthentication,)
     queryset = models.Project.objects.all()
 
     def get_queryset(self):
-        return self.queryset
+        return self.queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         '''Return appropriate serializer class'''
 
-        # if self.action == 'retrieve':
-        #     return
+        if self.action == 'retrieve':
+            return ProjectDetailSerializer
         if self.action == 'assign_users':
             return AssignManyToProjectSerializer
         return self.serializer_class
@@ -41,6 +41,8 @@ class ProjectViewSet(viewsets.ModelViewSet
         '''Method to assign users to project'''
         project = self.get_object()
         users = dict(request.data)['users']
+
+        # Get all users assigned to the project
         all_users_assigned_to_project = [
             assigned.user for assigned in
             models.UsersAssignedToProject.objects.filter(project=project)]
@@ -60,7 +62,7 @@ class ProjectViewSet(viewsets.ModelViewSet
                 user=user, project=project
             )
 
-        serializer = ProjectSerializer(
+        serializer = ProjectDetailSerializer(
             project, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -76,14 +78,27 @@ class TicketViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
-        if self.request.user.is_submitter or self.request.user.is_superuser:
-            return self.queryset.filter(user=self.request.user)
+        '''Get queryset depending on authentication and http method'''
+        if self.action == 'list':
+            if self.request.user.is_submitter or \
+                    self.request.user.is_superuser:
+                return self.queryset.filter(user=self.request.user)
+            else:
+                return self.queryset.filter(assigned_user=self.request.user)
         elif self.action == 'retrieve':
             return self.queryset
-        return self.queryset.filter(assigned_user=self.request.user)
+        return self.queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_serializer_class(self):
+        '''Return appropriate serializer class'''
+
+        if self.action == 'retrieve':
+            return TicketDetailSerializer
+
+        return self.serializer_class
 
 
 class CommentViewSet(viewsets.GenericViewSet,

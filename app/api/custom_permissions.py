@@ -3,9 +3,10 @@ from rest_framework.permissions import BasePermission
 SAFE_METHODS = ['GET']
 
 
-class IsAdminOrReadOnly(BasePermission):
+class IsProjectManagerOrReadOnly(BasePermission):
     """
-    Only safe method are allowed if the user is not a superuser
+    Only safe method are allowed if the user is not a project_manager
+    or superuser
     """
 
     def has_permission(self, request, view):

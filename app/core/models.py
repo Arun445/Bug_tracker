@@ -112,6 +112,8 @@ class Ticket(models.Model):
         related_name='assigned_user',
         on_delete=models.CASCADE, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
+    # ticket_comments = models.ManyToManyField(
+    #     settings.AUTH_USER_MODEL, through='Comment')
 
     def __str__(self):
         return str(self.title)

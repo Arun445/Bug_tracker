@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from faker import Faker
 from rest_framework import status
 from core import models
-from api.serializers import TicketSerializer
+from api.serializers import TicketDetailSerializer
 
 User = get_user_model()
 fake = Faker()
@@ -82,7 +82,7 @@ class DeveloperUserTicketApiTests(TestCase):
         create_test_ticket(user=self.user, project=self.project)
         url = ticket_detail_url(ticket.id)
         response = self.client.get(url)
-        serializer = TicketSerializer(ticket, many=False)
+        serializer = TicketDetailSerializer(ticket, many=False)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
@@ -97,8 +97,8 @@ class DeveloperUserTicketApiTests(TestCase):
 
         url = ticket_detail_url(ticket1.id)
         response = self.client.get(url)
-
         ticket1_comments = models.Comment.objects.filter(ticket=ticket1)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data['ticket_comments'][0]['message'], comment.message)
@@ -110,6 +110,7 @@ class DeveloperUserTicketApiTests(TestCase):
         payload = fake_ticket_payload(self.project.id)
         response = self.client.post(TICKET_URL, payload)
         tickets = models.Ticket.objects.all()
+
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertAlmostEquals(0, len(tickets))
 
@@ -145,7 +146,7 @@ class SubmitterUserTicketApiTests(TestCase):
         response = self.client.post(TICKET_URL, payload)
         ticket_exists = models.Ticket.objects.filter(
             user=self.user.id,
-            project=self.user.id,
+            project=self.project.id,
             title=payload['title']
         ).exists()
 
@@ -166,3 +167,34 @@ class SubmitterUserTicketApiTests(TestCase):
         response = self.client.post(TICKET_URL, payload)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_ticket_by_another_sumbitter(self):
+        '''Test the connection between sumbiters'''
+        submitter = User.objects.create_user(email=fake.email())
+        ticket1 = create_test_ticket(user=submitter, project=self.project)
+
+        url = ticket_detail_url(ticket1.id)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], ticket1.title)
+
+    def test_detele_ticket_only_by_creator(self):
+        '''Test deletion of another submitters ticket'''
+        submitter = User.objects.create_user(email=fake.email())
+        ticket1 = create_test_ticket(user=submitter, project=self.project)
+
+        url = ticket_detail_url(ticket1.id)
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_detele_ticket_by_creator(self):
+        '''Test deletion of ticket'''
+        ticket1 = create_test_ticket(user=self.user, project=self.project)
+
+        url = ticket_detail_url(ticket1.id)
+        response = self.client.delete(url)
+        tickets = models.Ticket.objects.all()
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(tickets), 0)
