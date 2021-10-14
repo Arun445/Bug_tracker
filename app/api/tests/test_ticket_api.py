@@ -64,11 +64,11 @@ class DeveloperUserTicketApiTests(TestCase):
 
     def test_list_all_tickets_assigned_to_user(self):
         '''List all tickets that are assigned to a developer'''
+
         super_user = User.objects.create_superuser(
             email=fake.email(), password=fake.password())
         ticket1 = create_test_ticket(super_user, self.project, self.user)
         create_test_ticket(super_user, self.project)
-
         response = self.client.get(TICKET_URL)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -89,12 +89,12 @@ class DeveloperUserTicketApiTests(TestCase):
 
     def test_list_all_ticket_comments(self):
         '''Test listing all the comments on a specific ticket'''
+
         ticket1 = create_test_ticket(user=self.user, project=self.project)
         ticket2 = create_test_ticket(user=self.user, project=self.project)
         comment = create_comment(user=self.user, ticket=ticket1)
         create_comment(user=self.user, ticket=ticket1)
         create_comment(user=self.user, ticket=ticket2)
-
         url = ticket_detail_url(ticket1.id)
         response = self.client.get(url)
         ticket1_comments = models.Comment.objects.filter(ticket=ticket1)
@@ -122,8 +122,8 @@ class SubmitterUserTicketApiTests(TestCase):
     def setUp(self):
 
         self.client = APIClient()
-        self.user = User.objects.create_superuser(
-            email=fake.email(), name=fake.name(), password=fake.password())
+        self.user = User.objects.create_user(
+            email=fake.email(), is_submitter=True, password=fake.password())
         self.project = models.Project.objects.create(
             user=self.user, name=fake.name())
         self.client.force_authenticate(self.user)
@@ -179,17 +179,18 @@ class SubmitterUserTicketApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], ticket1.title)
 
-    def test_detele_ticket_only_by_creator(self):
-        '''Test deletion of another submitters ticket'''
-        submitter = User.objects.create_user(email=fake.email())
+    def test_delete_ticket_only_by_creator(self):
+        '''Test deletion of another submitters ticket is invalid'''
+        submitter = User.objects.create_user(
+            email=fake.email(), is_submitter=True)
         ticket1 = create_test_ticket(user=submitter, project=self.project)
 
         url = ticket_detail_url(ticket1.id)
         response = self.client.delete(url)
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_detele_ticket_by_creator(self):
+    def test_delete_ticket_by_creator(self):
         '''Test deletion of ticket'''
         ticket1 = create_test_ticket(user=self.user, project=self.project)
 
@@ -198,3 +199,24 @@ class SubmitterUserTicketApiTests(TestCase):
         tickets = models.Ticket.objects.all()
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(tickets), 0)
+
+    def test_updating_ticket_create_history(self):
+        '''Tests that history models tracks every change made to the ticket'''
+        test_user = User.objects.create_user(
+            email=fake.email(), password=fake.password(), is_submitter=True)
+        payload = {
+            'title': fake.word(),
+            'priority': 'LOW',
+        }
+        ticket = create_test_ticket(test_user, self.project)
+        url = ticket_detail_url(ticket.id)
+        response = self.client.patch(url, payload)
+        ticket_history = models.TicketHistory.objects.filter(ticket=ticket)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(ticket_history.first(
+        ).properties_changed, 'title')
+        self.assertEqual(ticket_history.last(
+        ).old_value, 'Medium')
+        self.assertEqual(ticket_history.last(
+        ).new_value, payload['priority'])

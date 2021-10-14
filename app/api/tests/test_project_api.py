@@ -54,6 +54,7 @@ class NotAdminProjectApiTests(TestCase):
         self.client.force_authenticate(self.user)
 
     def test_get_all_projects_successful(self):
+        '''Test listing all projects successful'''
         Project.objects.create(user=self.user, name=fake.name())
         response = self.client.get(PROJECT_URL)
 
@@ -109,6 +110,16 @@ class NotAdminProjectApiTests(TestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_assign_users_to_project_unsuccessful(self):
+        '''Test to check what a developer can assign users to projects'''
+        user = fake_user()
+        project = Project.objects.create(user=self.user, name=fake.name())
+        url = users_assignment_url(project.id)
+        payload = {'users': [user.id]}
+        response = self.client.post(url, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
 
 class AdminProjectApiTests(TestCase):
     ''' Test Project model with admin and project manager users'''
@@ -161,3 +172,19 @@ class AdminProjectApiTests(TestCase):
         self.client.post(url, payload)
         response = self.client.post(url, payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_delete_project_not_by_creator(self):
+        '''Test fail to delete project by another manager'''
+        project_manager = User.objects.create_user(
+            email=fake.email(),
+            password=fake.password(),
+            is_project_manager=True)
+        project = Project.objects.create(
+            user=project_manager, name=fake.name())
+
+        url = project_detail_url(project.id)
+        response = self.client.delete(url)
+        projects = Project.objects.all()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(len(projects), 1)

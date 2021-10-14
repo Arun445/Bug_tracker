@@ -65,7 +65,6 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class TicketDetailSerializer(serializers.ModelSerializer):
-    # ticket_comments = serializers.SerializerMethodField()
     ticket_comments = serializers.SerializerMethodField()
 
     class Meta:

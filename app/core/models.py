@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import (
     BaseUserManager, AbstractUser)
+from django.db.models.deletion import DO_NOTHING
+from django.db.models.fields.related import ForeignKey
 
 
 class UserManager(BaseUserManager):
@@ -30,8 +32,8 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True)
+    last_name = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -89,6 +91,7 @@ class Ticket(models.Model):
         ('OPEN', 'Open'),
         ('IN PROGRESS', 'In Progress'),
         ('RESOLVED', 'Resolved'),
+        ('DONE', 'Done'),
     )
     TYPE_CHOICES = (
         ('BUGS/ERRORS', 'Bugs/Errors'),
@@ -129,3 +132,15 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.message
+
+
+class TicketHistory(models.Model):
+    ticket = models.ForeignKey('Ticket', on_delete=models.DO_NOTHING)
+    changed_by = ForeignKey(settings.AUTH_USER_MODEL, on_delete=DO_NOTHING)
+    properties_changed = models.CharField(max_length=100)
+    old_value = models.CharField(max_length=100)
+    new_value = models.CharField(max_length=100)
+    date_changed = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{str(self.ticket)} {self.date_changed}'

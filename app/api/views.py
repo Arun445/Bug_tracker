@@ -13,8 +13,7 @@ from api.serializers import (
 from core import models
 
 
-class ProjectViewSet(viewsets.ModelViewSet
-                     ):
+class ProjectViewSet(viewsets.ModelViewSet):
     '''Manage projects in the database'''
     serializer_class = ProjectSerializer
     permission_classes = (IsProjectManagerOrReadOnly,)
@@ -87,7 +86,7 @@ class TicketViewSet(viewsets.ModelViewSet):
                 return self.queryset.filter(assigned_user=self.request.user)
         elif self.action == 'retrieve':
             return self.queryset
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -95,10 +94,32 @@ class TicketViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         '''Return appropriate serializer class'''
 
-        if self.action == 'retrieve':
+        if self.action in ['retrieve', 'update', 'patch']:
             return TicketDetailSerializer
 
         return self.serializer_class
+
+    def perform_update(self, serializer):
+        ticket = self.get_object()
+        for key, new_value in (serializer.validated_data.items()):
+            if new_value != getattr(ticket, key):
+                ticket.tickethistory_set.create(
+                    changed_by=self.request.user,
+                    properties_changed=key,
+                    old_value=getattr(ticket, key),
+                    new_value=new_value)
+
+        serializer.save()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.user == self.request.user or self.request.user.is_superuser:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(
+                {'detail': 'User is not the creator of this ticket'},
+                status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CommentViewSet(viewsets.GenericViewSet,
@@ -119,7 +140,7 @@ class CommentViewSet(viewsets.GenericViewSet,
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.user == self.request.user:
+        if instance.user == self.request.user or self.request.user.is_superuser:
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
