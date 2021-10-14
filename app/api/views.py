@@ -84,8 +84,7 @@ class TicketViewSet(viewsets.ModelViewSet):
                 return self.queryset.filter(user=self.request.user)
             else:
                 return self.queryset.filter(assigned_user=self.request.user)
-        elif self.action == 'retrieve':
-            return self.queryset
+
         return self.queryset
 
     def perform_create(self, serializer):
@@ -94,7 +93,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         '''Return appropriate serializer class'''
 
-        if self.action in ['retrieve', 'update', 'patch']:
+        if self.action in ['retrieve', 'update']:
             return TicketDetailSerializer
 
         return self.serializer_class
@@ -112,8 +111,11 @@ class TicketViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def destroy(self, request, *args, **kwargs):
+        '''Permission to delete ticket to super users or
+        users who created the ticket'''
         instance = self.get_object()
-        if instance.user == self.request.user or self.request.user.is_superuser:
+        if (instance.user == self.request.user
+                or self.request.user.is_superuser):
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
@@ -139,8 +141,11 @@ class CommentViewSet(viewsets.GenericViewSet,
         serializer.save(user=self.request.user)
 
     def destroy(self, request, *args, **kwargs):
+        '''Permission to delete comment to super users or
+        users who created the comment'''
         instance = self.get_object()
-        if instance.user == self.request.user or self.request.user.is_superuser:
+        if (instance.user == self.request.user
+                or self.request.user.is_superuser):
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
