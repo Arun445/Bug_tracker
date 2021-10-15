@@ -21,6 +21,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = models.Project.objects.all()
 
     def get_queryset(self):
+        if self.action == 'destroy':
+            return self.queryset.filter(user=self.request.user)
         return self.queryset
 
     def get_serializer_class(self):
