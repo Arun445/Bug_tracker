@@ -138,7 +138,6 @@ class CommentViewSet(viewsets.GenericViewSet,
         return self.queryset
 
     def perform_create(self, serializer):
-        print(self.request.user)
         serializer.save(user=self.request.user)
 
     def destroy(self, request, *args, **kwargs):
