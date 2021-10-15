@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from core import models
+from django.contrib.auth import get_user_model
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -49,10 +50,31 @@ class AssignManyToProjectSerializer(serializers.Serializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        slug_field='email', queryset=get_user_model().objects.all())
+
     class Meta:
         model = models.Comment
         fields = '__all__'
-        read_only_fields = (id,)
+        read_only_fields = (id, 'user')
+
+
+class TicketHistorySerializer(serializers.ModelSerializer):
+    changed_by = serializers.SlugRelatedField(
+        slug_field='email', queryset=get_user_model().objects.all())
+
+    class Meta:
+        model = models.TicketHistory
+        fields = '__all__'
+
+
+class TicketFilesSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        slug_field='email', queryset=get_user_model().objects.all())
+
+    class Meta:
+        model = models.TicketFiles
+        fields = '__all__'
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -65,18 +87,20 @@ class TicketSerializer(serializers.ModelSerializer):
 
 
 class TicketDetailSerializer(serializers.ModelSerializer):
-    ticket_comments = serializers.SerializerMethodField()
+    ticket_comments = CommentSerializer(many=True)
+    ticket_history = TicketHistorySerializer(many=True, read_only=True)
+    ticket_files = TicketFilesSerializer(many=True)
 
     class Meta:
         model = models.Ticket
-        fields = ['id', 'user', 'project', 'title', 'description', 'priority',
+        fields = ('id', 'user', 'project', 'title', 'description', 'priority',
                   'status', 'ticket_type', 'assigned_user', 'date_created',
-                  'ticket_comments']
+                  'ticket_comments', 'ticket_history', 'ticket_files')
         read_only_fields = (id,)
 
-    def get_ticket_comments(self, obj):
-        ticket_comments = obj.comment_set.filter(
-            ticket=obj.id
-        )
-        serializer = CommentSerializer(ticket_comments, many=True)
-        return serializer.data
+    # def get_ticket_comments(self, obj):
+    #     ticket_comments = obj.comment_set.filter(
+    #         ticket=obj.id
+    #     )
+    #     serializer = CommentSerializer(ticket_comments, many=True)
+    #     return serializer.data

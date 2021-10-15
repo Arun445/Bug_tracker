@@ -115,8 +115,8 @@ class Ticket(models.Model):
         related_name='assigned_user',
         on_delete=models.CASCADE, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
-    # ticket_comments = models.ManyToManyField(
-    #     settings.AUTH_USER_MODEL, through='Comment')
+    ticket_files = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, through='TicketFiles')
 
     def __str__(self):
         return str(self.title)
@@ -126,7 +126,8 @@ class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE,
                              null=True)
-    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE)
+    ticket = models.ForeignKey(
+        'Ticket', related_name='ticket_comments', on_delete=models.CASCADE)
     message = models.TextField(max_length=200)
     date_created = models.DateTimeField(auto_now_add=True)
 
@@ -135,8 +136,10 @@ class Comment(models.Model):
 
 
 class TicketHistory(models.Model):
-    ticket = models.ForeignKey('Ticket', on_delete=models.DO_NOTHING)
-    changed_by = ForeignKey(settings.AUTH_USER_MODEL, on_delete=DO_NOTHING)
+    ticket = models.ForeignKey(
+        'Ticket', related_name='ticket_history', on_delete=models.DO_NOTHING)
+    changed_by = ForeignKey(settings.AUTH_USER_MODEL,
+                            on_delete=models.DO_NOTHING)
     properties_changed = models.CharField(max_length=100)
     old_value = models.CharField(max_length=100)
     new_value = models.CharField(max_length=100)
@@ -144,3 +147,14 @@ class TicketHistory(models.Model):
 
     def __str__(self):
         return f'{str(self.ticket)} {self.date_changed}'
+
+
+class TicketFiles(models.Model):
+    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE)
+    uploaded_by = ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    file = models.FileField(null=True)
+    date_uploaded = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{str(self.ticket)} uploaded by {str(self.uploaded_by)}'

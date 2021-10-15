@@ -70,8 +70,10 @@ class AuthenticatedUserTests(TestCase):
 
     def test_create_comment(self):
         '''Test if an authenticated user can create a comment'''
-        payload = {'ticket': self.ticket.id, 'message': fake.word()}
+        payload = {'user': self.user,
+                   'ticket': self.ticket.id, 'message': fake.word()}
         response = self.client.post(COMMENT_URL, payload)
+        print(response.data)
         comment_exists = models.Comment.objects.filter(user=self.user).exists()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(comment_exists)

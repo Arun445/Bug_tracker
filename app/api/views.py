@@ -102,7 +102,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         ticket = self.get_object()
         for key, new_value in (serializer.validated_data.items()):
             if new_value != getattr(ticket, key):
-                ticket.tickethistory_set.create(
+                ticket.ticket_history.create(
                     changed_by=self.request.user,
                     properties_changed=key,
                     old_value=getattr(ticket, key),
@@ -138,6 +138,7 @@ class CommentViewSet(viewsets.GenericViewSet,
         return self.queryset
 
     def perform_create(self, serializer):
+        print(self.request.user)
         serializer.save(user=self.request.user)
 
     def destroy(self, request, *args, **kwargs):
