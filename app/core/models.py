@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import (
     BaseUserManager, AbstractUser)
-from django.db.models.deletion import DO_NOTHING
 from django.db.models.fields.related import ForeignKey
 
 
