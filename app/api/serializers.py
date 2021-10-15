@@ -98,9 +98,9 @@ class TicketDetailSerializer(serializers.ModelSerializer):
                   'ticket_comments', 'ticket_history', 'ticket_files')
         read_only_fields = (id,)
 
-    # def get_ticket_comments(self, obj):
-    #     ticket_comments = obj.comment_set.filter(
-    #         ticket=obj.id
-    #     )
-    #     serializer = CommentSerializer(ticket_comments, many=True)
-    #     return serializer.data
+
+class TicketFilesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.TicketFiles
+        fields = ('id', 'file')
+        read_only_fields = ('id',)

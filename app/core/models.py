@@ -149,9 +149,9 @@ class TicketHistory(models.Model):
 
 
 class TicketFiles(models.Model):
-    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE)
+    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, null=True)
     uploaded_by = ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+                             on_delete=models.CASCADE, null=True)
     file = models.FileField(null=True)
     date_uploaded = models.DateTimeField(auto_now_add=True)
 

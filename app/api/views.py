@@ -9,7 +9,7 @@ from api.custom_permissions import (
 from api.serializers import (
     ProjectSerializer, ProjectDetailSerializer, TicketSerializer,
     TicketDetailSerializer, AssignManyToProjectSerializer,
-    CommentSerializer)
+    CommentSerializer, TicketFilesSerializer)
 from core import models
 
 
@@ -21,7 +21,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = models.Project.objects.all()
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset
 
     def get_serializer_class(self):
         '''Return appropriate serializer class'''
@@ -95,6 +95,8 @@ class TicketViewSet(viewsets.ModelViewSet):
 
         if self.action in ['retrieve', 'update']:
             return TicketDetailSerializer
+        elif self.action == 'upload_file':
+            return TicketFilesSerializer
 
         return self.serializer_class
 
@@ -122,6 +124,31 @@ class TicketViewSet(viewsets.ModelViewSet):
             return Response(
                 {'detail': 'User is not the creator of this ticket'},
                 status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(detail=True, methods=['POST'], url_path='upload-file')
+    def upload_file(self, request, pk=None):
+        '''Method to assign users to project'''
+        ticket = self.get_object()
+        file = request.FILES['file']
+        data = request.data
+        print(file.size)
+        if file.size > 10_000_000:
+            return Response({'detail': 'File size to big'},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        serializer = self.get_serializer(
+            ticket,
+            data=data,
+        )
+        if serializer.is_valid():
+            file = models.TicketFiles.objects.create(
+                ticket=ticket,
+                uploaded_by=self.request.user,
+                file=file
+            )
+            serializer = self.get_serializer(file)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentViewSet(viewsets.GenericViewSet,
