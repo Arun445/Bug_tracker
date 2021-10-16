@@ -69,7 +69,7 @@ class TicketHistorySerializer(serializers.ModelSerializer):
 
 
 class TicketFilesSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
+    uploaded_by = serializers.SlugRelatedField(
         slug_field='email', queryset=get_user_model().objects.all())
 
     class Meta:

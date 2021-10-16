@@ -131,18 +131,18 @@ class TicketViewSet(viewsets.ModelViewSet):
     def upload_file(self, request, pk=None):
         '''Method to assign users to project'''
         ticket = self.get_object()
-        file = request.FILES['file']
+
         data = request.data
-        print(file.size)
-        if file.size > 10_000_000:
-            return Response({'detail': 'File size to big'},
-                            status=status.HTTP_406_NOT_ACCEPTABLE)
 
         serializer = self.get_serializer(
             ticket,
             data=data,
         )
         if serializer.is_valid():
+            file = request.FILES['file']
+            if file.size > 10_000_000:
+                return Response({'detail': 'File size to big'},
+                                status=status.HTTP_406_NOT_ACCEPTABLE)
             file = models.TicketFiles.objects.create(
                 ticket=ticket,
                 uploaded_by=self.request.user,
@@ -150,7 +150,7 @@ class TicketViewSet(viewsets.ModelViewSet):
             )
             serializer = self.get_serializer(file)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CommentViewSet(viewsets.GenericViewSet,

@@ -1,3 +1,8 @@
+import tempfile
+import os
+from PIL import Image
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -16,6 +21,11 @@ TICKET_URL = reverse('api:ticket-list')
 def create_comment(user, ticket):
     return models.Comment.objects.create(
         user=user, ticket=ticket, message=fake.word())
+
+
+def file_upload_url(ticket_id):
+    '''Return url for ticket file upload'''
+    return reverse('api:ticket-upload-file', args=[ticket_id])
 
 
 def ticket_detail_url(ticket_id):
@@ -220,3 +230,55 @@ class SubmitterUserTicketApiTests(TestCase):
         ).old_value, 'Medium')
         self.assertEqual(ticket_history.last(
         ).new_value, payload['priority'])
+
+
+class TicketFileUploadApi(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email=fake.email(), password=fake.password(), is_submitter=True)
+        self.project = models.Project.objects.create(
+            user=self.user, name=fake.name())
+        self.ticket = create_test_ticket(self.user, self.project)
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def tearDown(self):
+        '''Check if there is a file uploaded if so delete it'''
+        if self.ticket.ticketfiles_set.first():
+            self.ticket.ticketfiles_set.first().file.delete()
+
+    def test_upload_image_to_ticket(self):
+        '''Test uploading image to ticket'''
+        url = file_upload_url(self.ticket.id)
+
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as ntf:
+            file = Image.new('RGB', (10, 10))
+            file.save(ntf, format='JPEG')
+            ntf.seek(0)
+            response = self.client.post(url, {'file': ntf}, format='multipart')
+        self.ticket.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('file', response.data)
+        # self.assertTrue(os.path.exists(
+        #     self.ticket.ticketfiles_set.first().file.path))
+
+    def test_upload_video_file_to_ticket(self):
+        '''Test uploading a video file to ticket'''
+        url = file_upload_url(self.ticket.id)
+
+        file = SimpleUploadedFile(
+            "file.mp4", b"file_content", content_type="video/mp4")
+
+        response = self.client.post(url, {'file': file}, format='multipart')
+        self.ticket.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('file', response.data)
+        # self.assertTrue(os.path.exists(
+        #     self.ticket.ticketfiles_set.first().file.path))
+
+    def test_upload_file_bad_request(self):
+        '''Test uploading an invalid file'''
+        url = file_upload_url(self.ticket.id)
+        response = self.client.post(url, {'file': 'none'}, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
