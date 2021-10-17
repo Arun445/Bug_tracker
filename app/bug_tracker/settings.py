@@ -5,17 +5,19 @@ from decouple import config, Csv
 import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
-# PRODUCTION BUILD
-try:
-    SECRET_KEY = config('SECRET_KEY')
-    DEBUG = config('DEBUG', default=False, cast=bool)
-    ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
-# ONLY WORKS WITH TEST CASE
-except:
+if TESTING:
+    # ONLY WORKS WITH TEST CASE
     SECRET_KEY = '9g$tf*(scqd0_(mxt7_i@ge9swl)_vzczq ^)_*dx$= ^k017sg)'
     DEBUG = True
     ALLOWED_HOSTS = []
+else:
+    # PRODUCTION BUILD
+    SECRET_KEY = config('SECRET_KEY')
+    DEBUG = config('DEBUG', default=False, cast=bool)
+    print('aa')
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 
 INSTALLED_APPS = [
@@ -70,32 +72,31 @@ WSGI_APPLICATION = 'bug_tracker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'HOST': os.environ.get('DB_HOST'),
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('POSTGRES_USER'),
-#         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-
-#     },
-#     'test': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / 'db.sqlite3',
-#     },
+#     }
 # }
 
-# if 'test' in sys.argv:
-#     DATABASES['default'] = DATABASES['test']
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+
+    },
+    'test': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    },
+}
+if TESTING:
+    DATABASES['default'] = DATABASES['test']
+print(os.environ.get('POSTGRES_PASSWORD'))
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
