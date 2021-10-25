@@ -1,5 +1,4 @@
 import tempfile
-import os
 from PIL import Image
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -260,8 +259,7 @@ class TicketFileUploadApi(TestCase):
         self.ticket.refresh_from_db()
         file = models.TicketFiles.objects.all().first()
 
-        print((file.file))
-        print((ntf.name))
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('file', response.data)
         # self.assertTrue(os.path.exists(

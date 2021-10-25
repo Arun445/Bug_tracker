@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;1,700&display=swap");
+body {
+  height: 100vh;
+  margin: 0;
+  font-family: "Poppins";
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+.nav-container {
+  background: #2f2fa2;
+}
+
+.nav-container .nav-logo {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.nav-container .nav-logo .svg-logo {
+  width: 2em;
+}
+
+.nav-container .nav-logo a {
+  font-size: 0.9em;
+  font-weight: bold;
+  padding: 0 0 0 1em;
+}
+
+.nav-container a {
+  color: white;
+}
+
+.nav-container ul {
+  color: white;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.nav-container ul li {
+  display: block;
+  padding: 0 1em;
+}
+
+.nav-container ul li .nav-bell-btn {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  background-color: transparent;
+  outline: none;
+  color: white;
+  border: none;
+  padding: 1em 0 0 0;
+}
+
+.nav-container ul li .nav-bell-btn .nav-bell-notification {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  background-color: #f64c72;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: 50%;
+}
+
+.nav-container ul li .nav-dropdown {
+  display: none;
+}
+
+.nav-bell-svg {
+  size: 2em;
+}
+
+.nav-bell-svg:hover {
+  color: red;
+}
+
+header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 1.5em;
+}
+/*# sourceMappingURL=main.css.map */

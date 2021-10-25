@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;1,700&display=swap");
+
+body {
+  height: 100vh;
+  margin: 0;
+  font-family: "Poppins";
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+.nav-container {
+  background: #2f2fa2;
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+
+    .svg-logo {
+      width: 2em;
+    }
+    a {
+      font-size: 0.9em;
+      font-weight: bold;
+      padding: 0 0 0 1em;
+    }
+  }
+
+  a {
+    color: white;
+  }
+
+  ul {
+    color: white;
+    display: flex;
+
+    li {
+      display: block;
+
+      padding: 0 1em;
+      .nav-bell-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background-color: transparent;
+        outline: none;
+        color: white;
+        border: none;
+        padding: 1em 0 0 0;
+        .nav-bell-notification {
+          position: absolute;
+          top: -10px;
+          right: -10px;
+          width: 20px;
+          height: 20px;
+          background-color: #f64c72;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 50%;
+        }
+      }
+      .nav-dropdown {
+        display: none;
+      }
+    }
+  }
+}
+
+.nav-bell-svg {
+  size: 2em;
+}
+.nav-bell-svg:hover {
+  color: red;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5em;
+}
