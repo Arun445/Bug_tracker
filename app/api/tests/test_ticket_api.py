@@ -273,7 +273,7 @@ class TicketFileUploadApi(TestCase):
 
         response = self.client.post(url, {'file': file}, format='multipart')
         self.ticket.refresh_from_db()
-        files = models.TicketFiles.objects.all().first()
+        # files = models.TicketFiles.objects.all().first()
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('file', response.data)
