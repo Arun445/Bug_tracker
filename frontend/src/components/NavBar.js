@@ -1,42 +1,32 @@
-import React from "react";
-import logo from "../logo.svg";
-function NavBar() {
+import React, { useState } from "react";
+import { ReactComponent as BugLogo } from "../logo.svg";
+import DropDown from "./DropDown";
+function NavBar(props) {
   return (
-    <div className="nav-container">
-      <header>
-        <div className="nav-logo">
-          <img src={logo} className="svg-logo" />
-          <a>Bug Tracker</a>
-        </div>
-        <ul className="nav-right">
-          <li>
-            <form>
-              <input />
-              <button>
-                <i className="fas fa-search"></i>
-              </button>
-            </form>
-          </li>
-          <li>
-            <button className="nav-bell-btn">
-              <i className="far fa-bell nav-bell-svg"></i>
-              <i className="nav-bell-notification">2</i>
+    <header className="nav-container">
+      <div className="nav-logo">
+        <a className="svg-logo">{<BugLogo />}</a>
+        <a>Bug Tracker</a>
+      </div>
+      <ul className="nav-nav">
+        <li>
+          <form className="nav-form">
+            <input className="nav-input" />
+            <button className="search-btn">
+              <i className="fas fa-search"></i>
             </button>
-          </li>
-          <li>
-            <a href="#">
-              bazinga<i className="fas fa-chevron-down"></i>
-            </a>
-            <div className="nav-dropdown">
-              <ul>
-                <li>logout</li>
-                <li>profile</li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-      </header>
-    </div>
+          </form>
+          <button className="nav-bell-btn">
+            <i className="far fa-bell nav-bell-svg"></i>
+            <i className="nav-bell-notification">2</i>
+          </button>
+        </li>
+
+        <li>
+          <DropDown />
+        </li>
+      </ul>
+    </header>
   );
 }
 

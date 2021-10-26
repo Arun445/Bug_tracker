@@ -259,7 +259,6 @@ class TicketFileUploadApi(TestCase):
         self.ticket.refresh_from_db()
         file = models.TicketFiles.objects.all().first()
 
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('file', response.data)
         # self.assertTrue(os.path.exists(
@@ -276,8 +275,6 @@ class TicketFileUploadApi(TestCase):
         self.ticket.refresh_from_db()
         files = models.TicketFiles.objects.all().first()
 
-        print((files.file))
-        print((file))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIn('file', response.data)
         # self.assertTrue(os.path.exists(

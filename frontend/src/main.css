@@ -1,4 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;1,700&display=swap");
+/*------------------------VARIABLES------------------------*/
+:root {
+  --electric-color: #5cdb95;
+  --pink-color: #f64c72;
+  --blue-color: #2f2fa2;
+  --border-radius: 10px;
+}
+
 body {
   height: 100vh;
   margin: 0;
@@ -15,8 +23,17 @@ a {
   text-decoration: none;
 }
 
+/*------------------------NAV SECTION------------------------*/
 .nav-container {
-  background: #2f2fa2;
+  background: var(--blue-color);
+  height: 30px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 1em;
 }
 
 .nav-container .nav-logo {
@@ -29,13 +46,16 @@ a {
 }
 
 .nav-container .nav-logo .svg-logo {
-  width: 2em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 2.5em;
+  padding-right: 0.5em;
 }
 
 .nav-container .nav-logo a {
   font-size: 0.9em;
   font-weight: bold;
-  padding: 0 0 0 1em;
 }
 
 .nav-container a {
@@ -50,8 +70,21 @@ a {
 }
 
 .nav-container ul li {
-  display: block;
-  padding: 0 1em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0 0 0 0.8em;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  place-content: center;
+}
+
+.nav-container ul li button {
+  padding-left: 0.8em;
 }
 
 .nav-container ul li .nav-bell-btn {
@@ -59,17 +92,10 @@ a {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
   background-color: transparent;
   outline: none;
   color: white;
   border: none;
-  padding: 1em 0 0 0;
 }
 
 .nav-container ul li .nav-bell-btn .nav-bell-notification {
@@ -78,7 +104,7 @@ a {
   right: -10px;
   width: 20px;
   height: 20px;
-  background-color: #f64c72;
+  background-color: var(--pink-color);
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -92,24 +118,92 @@ a {
 }
 
 .nav-container ul li .nav-dropdown {
-  display: none;
+  position: absolute;
+  top: 55px;
+  width: 100px;
+  -webkit-transform: translateX(-25%);
+          transform: translateX(-25%);
+  background-color: var(--blue-color);
+  border: 1px solid var(--electric-color);
+  padding: 1em;
+  overflow: hidden;
+  border-radius: var(--border-radius);
 }
 
-.nav-bell-svg {
-  size: 2em;
-}
-
-.nav-bell-svg:hover {
-  color: red;
-}
-
-header {
+.nav-container ul li .nav-dropdown .dropdown-item {
+  height: 20px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  padding: 1.5em;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-radius: var(--border-radius);
+  -webkit-transition: background 300ms;
+  transition: background 300ms;
+  padding: 0.5em;
+}
+
+.nav-container ul li .nav-dropdown .dropdown-item:hover {
+  background-color: var(--electric-color);
+}
+
+.nav-container ul li .nav-input {
+  display: none;
+}
+
+.nav-container ul li .search-btn {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  color: white;
+  font-size: 1em;
+}
+
+.nav-container ul li .fa-chevron-down {
+  padding-left: 0.2em;
+  font-size: 0.7em;
+}
+
+.nav-bell-svg {
+  font-size: 1.4em;
+  -webkit-transition: color 300ms;
+  transition: color 300ms;
+}
+
+.nav-bell-svg:hover {
+  color: var(--electric-color);
+  cursor: pointer;
+}
+
+.nav-user:hover {
+  color: var(--electric-color);
+  cursor: pointer;
+}
+
+.nav-user {
+  -webkit-transition: color 300ms;
+  transition: color 300ms;
+}
+
+/*------------------------SIDEBAR SECTION------------------------*/
+@media only screen and (min-width: 800px) {
+  .nav-input {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    position: relative;
+  }
+  .nav-input .search-btn {
+    position: absolute;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    right: 0px;
+    bottom: 3px;
+    background-color: transparent;
+    outline: none;
+    border: none;
+  }
 }
 /*# sourceMappingURL=main.css.map */
