@@ -5,6 +5,7 @@
   --electric-color: #5cdb95;
   --pink-color: #f64c72;
   --blue-color: #2f2fa2;
+  --grey-color: #f6f6f6;
   --border-radius: 10px;
 }
 
@@ -12,6 +13,7 @@ body {
   height: 100vh;
   margin: 0;
   font-family: "Poppins";
+  background-color: var(--grey-color);
 }
 
 ul {
@@ -24,13 +26,16 @@ a {
   text-decoration: none;
 }
 /*------------------------NAV SECTION------------------------*/
-
+header {
+  position: fixed;
+  width: 90%;
+}
 .nav-container {
   background: var(--blue-color);
-  height: 30px;
+  height: 3em;
   display: flex;
   justify-content: space-between;
-  padding: 1em;
+  padding: 1em 2em;
 
   .nav-logo {
     display: flex;
@@ -38,11 +43,11 @@ a {
 
     .svg-logo {
       display: flex;
-      width: 2.5em;
+      width: 2em;
       padding-right: 0.5em;
     }
     a {
-      font-size: 0.9em;
+      font-size: 1.6em;
       font-weight: bold;
     }
   }
@@ -67,7 +72,6 @@ a {
       .nav-bell-btn {
         position: relative;
         display: flex;
-
         background-color: transparent;
         outline: none;
         color: white;
@@ -77,8 +81,8 @@ a {
           position: absolute;
           top: -10px;
           right: -10px;
-          width: 20px;
-          height: 20px;
+          width: 1.4em;
+          height: 1.4em;
           background-color: var(--pink-color);
           display: flex;
           justify-content: center;
@@ -90,9 +94,10 @@ a {
         position: absolute;
         top: 55px;
         width: 100px;
+        right: -20px;
         transform: translateX(-25%);
         background-color: var(--blue-color);
-        border: 1px solid var(--electric-color);
+        box-shadow: 2px 2px 2px 2px #888888;
         padding: 1em;
         overflow: hidden;
 
@@ -107,7 +112,7 @@ a {
           padding: 0.5em;
         }
         .dropdown-item:hover {
-          background-color: var(--electric-color);
+          background-color: rgb(115, 115, 241);
         }
       }
       .nav-input {
@@ -118,7 +123,7 @@ a {
         outline: none;
         border: none;
         color: white;
-        font-size: 1em;
+        font-size: 1.2em;
       }
       .fa-chevron-down {
         padding-left: 0.2em;
@@ -129,7 +134,7 @@ a {
 }
 
 .nav-bell-svg {
-  font-size: 1.4em;
+  font-size: 1.5em;
   transition: color 300ms;
 }
 .nav-bell-svg:hover {
@@ -142,22 +147,122 @@ a {
 }
 .nav-user {
   transition: color 300ms;
+  font-size: 1.3em;
 }
 
 /*------------------------SIDEBAR SECTION------------------------*/
 
-@media only screen and (min-width: 800px) {
-  .nav-input {
-    display: flex;
-    position: relative;
-    .search-btn {
-      position: absolute;
+.sidebar {
+  background-color: white;
+  margin-top: 5em;
+  width: 12.4em;
+  height: 100vh;
+  left: -13em;
+  position: fixed;
+  color: black;
+  padding: 1em;
+  border-right: 1px solid rgb(95, 93, 93);
+  transition: 300ms;
+
+  ul {
+    padding-top: 2em;
+    li {
       display: flex;
-      right: 0px;
-      bottom: 3px;
-      background-color: transparent;
-      outline: none;
-      border: none;
+      text-align: center;
+      padding: 1em;
+      transition: background 300ms;
+
+      i {
+        padding-right: 1em;
+        padding-top: 0.25em;
+      }
+
+      a {
+        color: black;
+        text-decoration: none;
+      }
     }
+    li:hover {
+      background-color: var(--grey-color);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  }
+}
+.sidebar-open {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--blue-color);
+  background-color: var(--grey-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  top: px;
+  left: 220px;
+  transition: background 300ms;
+  i {
+    padding-right: 0.1em;
+  }
+}
+.sidebar-open:hover {
+  background-color: var(--blue-color);
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar.active {
+  left: 0;
+  transition: 300ms;
+}
+/*------------------------DASHBOARD SECTION------------------------*/
+
+.dashboard {
+  margin: 5em 0 0 15.4em;
+  padding: 4em;
+  position: fixed;
+  background-color: var(--grey-color);
+  transition: margin-left 0.2s ease-in;
+  height: 90vh;
+}
+
+.dashboard.active {
+  margin-left: 5em;
+}
+@media only screen and (min-width: 645px) {
+  header {
+    width: 92%;
+  }
+}
+@media only screen and (min-width: 800px) {
+  header {
+    width: 94%;
+  }
+  .nav-container {
+    ul {
+      li {
+        .nav-input {
+          display: inline-block;
+          position: relative;
+        }
+        .search-btn {
+          color: black;
+          position: relative;
+          left: -9.5em;
+          top: 0.19em;
+        }
+      }
+    }
+  }
+}
+@media only screen and (min-width: 1075px) {
+  header {
+    width: 96%;
+  }
+}
+@media only screen and (min-width: 1600px) {
+  header {
+    width: 97%;
   }
 }
