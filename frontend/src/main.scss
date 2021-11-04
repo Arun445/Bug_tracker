@@ -9,7 +9,6 @@
   --grey-dark-color: #707070;
   --border-radius: 10px;
 }
-
 body {
   height: 100vh;
   margin: 0;
@@ -27,11 +26,12 @@ a {
   text-decoration: none;
 }
 /*------------------------NAV SECTION------------------------*/
-header {
-  position: fixed;
-  width: 90%;
-}
 .nav-container {
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+}
+header {
   background: var(--blue-color);
   height: 3em;
   display: flex;
@@ -157,9 +157,9 @@ header {
   background-color: white;
   margin-top: 5em;
   width: 12.4em;
-  height: 100vh;
+  height: 90vh;
   left: -13em;
-  position: fixed;
+  position: relative;
   color: black;
   padding: 1em;
   border-right: 1px solid rgb(95, 93, 93);
@@ -183,7 +183,8 @@ header {
         text-decoration: none;
       }
     }
-    li:hover {
+    li:hover,
+    li:active {
       background-color: var(--grey-color);
       border-radius: 10px;
       cursor: pointer;
@@ -217,154 +218,71 @@ header {
   left: 0;
   transition: 300ms;
 }
-/*------------------------DASHBOARD SECTION margin: 0em 0 0 15em;
-  padding: 8em 8em 8em 4em;
-  transition: margin-left 0.2s ease-in;
-  height: 90vh;
-  width: 78%;------------------------*/
+/*------------------------DASHBOARD SECTION ------------------------*/
+
+.main-container {
+  display: flex;
+  width: 100%;
+  position: relative;
+}
 
 .main {
-  margin: 0em 0 0 0em;
-  padding: 8em 0 8em 4em;
   transition: margin-left 0.2s ease-in;
-  height: 90vh;
+
   width: 80%;
+
+  padding: 8rem 0 8rem 4rem;
+  left: 10rem;
+  z-index: -1;
 }
 
 .main.active {
   margin-left: 2em;
 }
-
-.dashboard-box {
+.dashboard {
+  display: grid;
   margin: 4em 0 0 0;
+  row-gap: 2rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  column-gap: 2rem;
+}
+.dashboard-box {
+  grid-column: 1/-1;
+
   border: 1px solid var(--grey-dark-color);
-  width: 100%;
   padding: 8em 0;
   border-radius: 8px;
   background-color: white;
 }
-.dashboard-diagrams {
-  display: grid;
 
-  margin: 0em 0 2em 0;
-
-  .dashboard-box-sm {
-    border: 1px solid var(--grey-dark-color);
-    background-color: white;
-    width: 100%;
-    padding: 4em 0;
-    border-radius: 8px;
-    margin-top: 2em;
-  }
+.dashboard-box-sm {
+  border: 1px solid var(--grey-dark-color);
+  background-color: white;
+  padding: 4rem 0;
+  border-radius: 8px;
+  flex: 1;
 }
 
-@media only screen and (min-width: 645px) {
-  header {
-    width: 92%;
-  }
-  .main {
-    width: 85%;
-  }
-}
 @media only screen and (min-width: 800px) {
   header {
-    width: 94%;
-  }
-  .nav-container {
     ul {
       li {
         .nav-input {
-          display: inline-block;
+          display: inline;
           position: relative;
+          padding-left: 1.5em;
         }
         .search-btn {
-          font-size: 1em;
+          font-size: 0.95rem;
           color: black;
-          position: relative;
-          left: -11.6em;
-          top: 0.18em;
+          position: absolute;
+          right: 21.9rem;
+          top: 2rem;
         }
       }
     }
   }
-
-  .main {
-    width: 86%;
-  }
-
-  .main.active {
-    margin-left: 2em;
-  }
-
-  .dashboard-box {
-    margin: 8em 0 0 0;
-    border: 1px solid var(--grey-dark-color);
-    width: 100%;
-    padding: 8em 0;
-    border-radius: 8px;
-    background-color: white;
-  }
-  .dashboard-diagrams {
-    display: flex;
-    justify-content: space-between;
-    margin: 2em 0;
-
-    .dashboard-box-sm {
-      border: 1px solid var(--grey-dark-color);
-      background-color: white;
-      width: 27%;
-      padding: 5em 1em;
-      border-radius: 8px;
-    }
-  }
 }
 @media only screen and (min-width: 1075px) {
-  header {
-    width: 96%;
-  }
-  .main {
-    margin: 0em 0 0 15em;
-    padding: 8em 8em 8em 4em;
-    transition: margin-left 0.2s ease-in;
-    height: 90vh;
-    width: 90%;
-  }
-
-  .main.active {
-    margin-left: 2em;
-  }
-
-  .dashboard-box {
-    margin: 8em 0 0 0;
-    border: 1px solid var(--grey-dark-color);
-    width: 100%;
-    padding: 8em 0;
-    border-radius: 8px;
-    background-color: white;
-  }
-  .dashboard-diagrams {
-    display: flex;
-    justify-content: space-between;
-    margin: 2em 0;
-
-    .dashboard-box-sm {
-      border: 1px solid var(--grey-dark-color);
-      background-color: white;
-      width: 29%;
-      padding: 6em 1em;
-      border-radius: 8px;
-    }
-  }
-}
-@media only screen and (min-width: 1600px) {
-  header {
-    width: 97%;
-  }
-  .main {
-    margin: 0em 0 0 15em;
-    padding: 8em 8em 8em 4em;
-    transition: margin-left 0.2s ease-in;
-    height: 90vh;
-    width: 94%;
-  }
 }
