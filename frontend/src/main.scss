@@ -156,10 +156,10 @@ header {
 .sidebar {
   background-color: white;
   margin-top: 5em;
-  width: 12.4em;
+
   height: 90vh;
   left: -13em;
-  position: relative;
+  position: absolute;
   color: black;
   padding: 1em;
   border-right: 1px solid rgb(95, 93, 93);
@@ -201,7 +201,6 @@ header {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  top: px;
   left: 220px;
   transition: background 300ms;
   i {
@@ -229,9 +228,9 @@ header {
 .main {
   transition: margin-left 0.2s ease-in;
 
-  width: 80%;
+  width: 100%;
 
-  padding: 8rem 0 8rem 4rem;
+  padding: 8rem 4rem;
   left: 10rem;
   z-index: -1;
 }
@@ -278,7 +277,7 @@ header {
           color: black;
           position: absolute;
           right: 21.9rem;
-          top: 2rem;
+          top: 3rem;
         }
       }
     }

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { ReactComponent as BugLogo } from "../logo.svg";
 import DropDown from "./DropDown";
 function NavBar(props) {
+  const [open, setOpen] = useState(1);
+  console.log(open);
   return (
     <div className="nav-container">
       <header>
@@ -24,7 +26,11 @@ function NavBar(props) {
           </li>
 
           <li>
-            <DropDown />
+            <DropDown
+              onClick={() => {
+                setOpen(open + 1);
+              }}
+            />
           </li>
         </ul>
       </header>
